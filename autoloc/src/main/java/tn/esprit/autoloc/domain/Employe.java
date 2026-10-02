@@ -18,6 +18,10 @@ public class Employe {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idEmploye;
 
+    @ManyToOne
+    @JoinColumn(name = "id_agence")
+    private Agence agence;
+
     @Column(nullable = false, length = 50)
     private String nom;
 

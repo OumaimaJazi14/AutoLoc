@@ -20,6 +20,10 @@ public class Paiement {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idPaiement;
 
+    @ManyToOne
+    @JoinColumn(name = "id_contrat", nullable = false)
+    private Contrat contrat;
+
     @Column(nullable = false, precision = 10, scale = 2)
     private BigDecimal montant;
 

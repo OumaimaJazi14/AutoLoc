@@ -6,7 +6,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import java.time.LocalDate;
-
+import java.util.ArrayList;
+import java.util.List;
 @Entity
 @Table(name = "client")
 @Getter
@@ -18,6 +19,9 @@ public class Client {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idClient;
+
+    @OneToMany(mappedBy = "client")
+    private List<Reservation> reservations = new ArrayList<>();
 
     @Column(nullable = false, length = 50)
     private String nom;
