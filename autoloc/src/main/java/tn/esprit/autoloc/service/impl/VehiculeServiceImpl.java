@@ -1,12 +1,11 @@
 package tn.esprit.autoloc.service.impl;
 
-import jakarta.persistence.EntityNotFoundException;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import tn.esprit.autoloc.domain.Vehicule;
+import tn.esprit.autoloc.exception.ResourceNotFoundException;
 import tn.esprit.autoloc.repository.IVehiculeRepository;
 import tn.esprit.autoloc.service.IVehiculeService;
 
@@ -14,41 +13,67 @@ import tn.esprit.autoloc.service.IVehiculeService;
 @RequiredArgsConstructor
 public class VehiculeServiceImpl implements IVehiculeService {
 
-    private final IVehiculeRepository repository;
+    private final IVehiculeRepository vehiculeRepository;
 
     @Override
     @Transactional
-    public Vehicule create(Vehicule entity) {
-        return repository.save(entity);
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public Vehicule getById(Long id) {
-        return repository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Vehicule introuvable : id=" + id));
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public List<Vehicule> getAll() {
-        return repository.findAll();
-    }
-
-    @Override
-    @Transactional
-    public Vehicule update(Long id, Vehicule entity) {
-        Vehicule existing = getById(id);
-        BeanUtils.copyProperties(entity, existing, "id");
-        return repository.save(existing);
-    }
-
-    @Override
-    @Transactional
-    public void delete(Long id) {
-        if (!repository.existsById(id)) {
-            throw new EntityNotFoundException("Vehicule introuvable : id=" + id);
+    public Vehicule create(Vehicule vehicule) {
+        if (vehicule.getIdVehicule() != null) {
+            throw new IllegalArgumentException("Un nouveau vehicule ne doit pas avoir d'identifiant");
         }
-        repository.deleteById(id);
+        valider(vehicule);
+        return vehiculeRepository.save(vehicule);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Vehicule findById(Long id) {
+        return vehiculeRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Vehicule", id));
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<Vehicule> findAll() {
+        return vehiculeRepository.findAll();
+    }
+
+    @Override
+    @Transactional
+    public Vehicule update(Long id, Vehicule vehicule) {
+        Vehicule existant = findById(id);
+        valider(vehicule);
+        existant.setImmatriculation(vehicule.getImmatriculation());
+        existant.setMarque(vehicule.getMarque());
+        existant.setModele(vehicule.getModele());
+        existant.setCategorie(vehicule.getCategorie());
+        existant.setTarifJournalier(vehicule.getTarifJournalier());
+        existant.setStatut(vehicule.getStatut());
+        existant.setAgence(vehicule.getAgence());
+        return vehiculeRepository.save(existant);
+    }
+
+    @Override
+    @Transactional
+    public void deleteById(Long id) {
+        if (!vehiculeRepository.existsById(id)) {
+            throw new ResourceNotFoundException("Vehicule", id);
+        }
+        vehiculeRepository.deleteById(id);
+    }
+
+    private void valider(Vehicule vehicule) {
+        exigerTexte(vehicule.getImmatriculation(), "immatriculation");
+        exigerTexte(vehicule.getMarque(), "marque");
+        exigerTexte(vehicule.getModele(), "modele");
+        if (vehicule.getTarifJournalier() == null || vehicule.getTarifJournalier().signum() < 0) {
+            throw new IllegalArgumentException("Le tarif journalier doit etre positif ou nul");
+        }
+    }
+
+    private static void exigerTexte(String valeur, String champ) {
+        if (valeur == null || valeur.isBlank()) {
+            throw new IllegalArgumentException("Le champ " + champ + " est obligatoire");
+        }
     }
 }

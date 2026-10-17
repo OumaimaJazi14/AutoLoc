@@ -5,13 +5,13 @@ import tn.esprit.autoloc.domain.Client;
 
 public interface IClientService {
 
-    Client create(Client entity);
+    Client create(Client client);
 
-    Client getById(Long id);
+    Client findById(Long id);
 
-    List<Client> getAll();
+    List<Client> findAll();
 
-    Client update(Long id, Client entity);
+    Client update(Long id, Client client);
 
-    void delete(Long id);
+    void deleteById(Long id);
 }

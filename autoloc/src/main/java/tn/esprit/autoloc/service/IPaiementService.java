@@ -3,15 +3,10 @@ package tn.esprit.autoloc.service;
 import java.util.List;
 import tn.esprit.autoloc.domain.Paiement;
 
+/** Lecture seule : les paiements sont geres a travers le Contrat. */
 public interface IPaiementService {
 
-    Paiement create(Paiement entity);
+    Paiement findById(Long id);
 
-    Paiement getById(Long id);
-
-    List<Paiement> getAll();
-
-    Paiement update(Long id, Paiement entity);
-
-    void delete(Long id);
+    List<Paiement> findAll();
 }

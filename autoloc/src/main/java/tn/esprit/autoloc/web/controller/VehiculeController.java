@@ -29,13 +29,13 @@ public class VehiculeController {
     }
 
     @GetMapping("/{id}")
-    public Vehicule getById(@PathVariable Long id) {
-        return vehiculeService.getById(id);
+    public Vehicule findById(@PathVariable Long id) {
+        return vehiculeService.findById(id);
     }
 
     @GetMapping
-    public List<Vehicule> getAll() {
-        return vehiculeService.getAll();
+    public List<Vehicule> findAll() {
+        return vehiculeService.findAll();
     }
 
     @PutMapping("/{id}")
@@ -45,7 +45,7 @@ public class VehiculeController {
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void delete(@PathVariable Long id) {
-        vehiculeService.delete(id);
+    public void deleteById(@PathVariable Long id) {
+        vehiculeService.deleteById(id);
     }
 }
